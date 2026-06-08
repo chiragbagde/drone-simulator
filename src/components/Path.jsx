@@ -1,22 +1,19 @@
 import React from "react";
-import { PolylineF as Polyline, } from "@react-google-maps/api";
+import { PolylineF as Polyline } from "@react-google-maps/api";
 
-function MapPath({data}) {
-    // const [counter, setCounter] = useState(60);
+const pathOptions = {
+  strokeColor: "#2563EB",
+  strokeOpacity: 0.8,
+  strokeWeight: 3,
+};
 
-  // useEffect(() => {
-  //   const timer = 
-  //     counter>0 && setInterval(() => setCounter(counter - 1),1000);
-  //   return () => clearInterval(timer);
-  // },[counter])
+function MapPath({ data }) {
+  const path = data.map((marker) => ({
+    lat: marker.lat,
+    lng: marker.lng,
+  }));
 
-  const path = data.map((marker) => {
-    return { lat: marker.lat, lng: marker.lng };
-  });
-
-  return path && <>
-        {/* <Polyline path={path} />; */}
-  </>
+  return path.length > 1 ? <Polyline path={path} options={pathOptions} /> : null;
 }
 
 export default MapPath;

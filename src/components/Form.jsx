@@ -100,7 +100,7 @@ const Form = ({ setData }) => {
           />
           <input
             type="text"
-            name="lng"
+            name="timestamp"
             placeholder="timestamp"
             value={item.timestamp}
             onChange={(event) => handleInputChange(event, index)}
