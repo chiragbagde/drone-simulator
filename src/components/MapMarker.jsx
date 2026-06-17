@@ -1,55 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React from "react";
 import { PolylineF as Polyline, MarkerF } from "@react-google-maps/api";
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 
-const MapMarker = ({ data, setData, reached, setReached }) => {
-  const [datetimeIndex, setDatetimeIndex] = useState(0);
-  const navigate = useNavigate();
+// Full planned route (faint) and the portion already travelled (bold).
+const fullPathOptions = {
+  strokeColor: "#94a3b8",
+  strokeOpacity: 0.5,
+  strokeWeight: 2,
+};
+const travelledOptions = {
+  strokeColor: "#2563EB",
+  strokeWeight: 4,
+};
 
-  const datetimes = data.map((item) => new Date(item.timestamp));
+// Presentational map layer driven by the playback `index`: draws the route,
+// the travelled segment, every waypoint, and the drone at the current point.
+const MapMarker = ({ data, index = 0 }) => {
+  if (!data || data.length === 0) return null;
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const now = new Date();
-      if (now.getTime() > datetimes[0].getTime() && datetimes.length !== 1) {
-        const newIndex = datetimes.findIndex(datetime => datetime.getTime() > now.getTime());
-        if (newIndex !== -1 && newIndex !== datetimeIndex) {
-          setDatetimeIndex(newIndex);
-          setData(data.slice(newIndex));
-        }
-      }
-      if (data.length === 1 && !reached) {
-        setReached(true);
-      }
-    }, 2000);
-    return () => clearInterval(intervalId);
-  }, [datetimeIndex]);
+  const fullPath = data.map((m) => ({ lat: m.lat, lng: m.lng }));
 
-  useEffect(() => {
-    if (reached) {
-      Swal.fire({
-        title: 'Simulation Complete',
-        text: `Destination reached: lat ${data[0].lat}, lng ${data[0].lng}`,
-        icon: 'success',
-      }).then(() => {
-        setReached(false);
-        navigate('/home');
-      });
-    }
-  }, [reached]);
+  if (data.length === 1) {
+    return <MarkerF position={fullPath[0]} />;
+  }
 
-  const path = data.map((marker) => ({ lat: marker.lat, lng: marker.lng }));
+  const travelled = fullPath.slice(0, index + 1);
+  const current = data[index];
 
-  return data.length > 1 ? (
+  return (
     <>
-      {data.map((marker) => (
-        <MarkerF key={marker.id} position={{ lat: marker.lat, lng: marker.lng }} />
+      <Polyline path={fullPath} options={fullPathOptions} />
+      {travelled.length > 1 && <Polyline path={travelled} options={travelledOptions} />}
+      {data.map((marker, i) => (
+        <MarkerF
+          key={marker.id ?? i}
+          position={{ lat: marker.lat, lng: marker.lng }}
+          opacity={i <= index ? 1 : 0.4}
+        />
       ))}
-      <Polyline path={path} options={{ strokeColor: '#2563EB', strokeWeight: 3 }} />
+      {current && (
+        <MarkerF position={{ lat: current.lat, lng: current.lng }} label="🚁" zIndex={1000} />
+      )}
     </>
-  ) : (
-    <MarkerF key={data[0].id} position={{ lat: data[0].lat, lng: data[0].lng }} />
   );
 };
 
