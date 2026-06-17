@@ -1,6 +1,12 @@
 # Drone Simulator
 
-A React app that simulates live drone flight paths on Google Maps. Upload a coordinates file and watch the drone trace the route in real time.
+A React app that simulates drone flight paths on Google Maps. Upload a coordinates file and replay the route with full playback controls and live telemetry.
+
+**Features**
+
+- Playback controls: play / pause / reset, a 0.5x–4x speed selector, and a scrubber to seek to any waypoint
+- Live telemetry panel: current position, speed (km/h), distance travelled / remaining, ETA, and progress
+- Travelled vs. planned route drawn as separate polylines, with the drone marker at the current point
 
 **Stack**
 
@@ -20,8 +26,8 @@ npm start
 **How it works**
 
 1. Upload a coordinates file (see `coordinates.txt` for the expected format)
-2. Adjust the timestamp as needed
-3. Click Simulate to watch the drone trace the path live on the map
+2. Adjust the timestamps as needed
+3. Click Simulate, then use the playback controls to fly the route and watch the telemetry update
 
 **Coordinates file format**
 
